@@ -3,11 +3,15 @@ import { CardService } from "../services/card.service";
 
 const cardService = new CardService();
 
-export const validateCard = (req: Request, res: Response, next: NextFunction): void => {
+export const validateCard = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   try {
     const { cardNumber } = req.body;
 
-    // Validate presence
+    // Missing input
     if (!cardNumber) {
       res.status(400).json({
         success: false,
@@ -16,7 +20,7 @@ export const validateCard = (req: Request, res: Response, next: NextFunction): v
       return;
     }
 
-    // Validate type
+    // Type validation
     if (typeof cardNumber !== "string") {
       res.status(400).json({
         success: false,
@@ -25,8 +29,9 @@ export const validateCard = (req: Request, res: Response, next: NextFunction): v
       return;
     }
 
-    // Sanitize and validate content
     const sanitizedCardNumber = cardNumber.trim();
+
+    // Content validation (digits only)
     if (!/^\d+$/.test(sanitizedCardNumber)) {
       res.status(400).json({
         success: false,
@@ -37,13 +42,13 @@ export const validateCard = (req: Request, res: Response, next: NextFunction): v
 
     const isValid = cardService.validate(sanitizedCardNumber);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         cardNumber: sanitizedCardNumber,
         isValid,
       },
-      message: isValid ? "Valid card number" : "Invalid card number",
+      message: isValid ? "Card number is valid" : "Card number is invalid",
     });
   } catch (error) {
     next(error);
