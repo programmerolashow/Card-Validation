@@ -7,7 +7,7 @@ export const validateCard = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+) => {
   try {
     const { cardNumber } = req.body;
 
